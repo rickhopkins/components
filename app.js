@@ -26,9 +26,9 @@ class MyFirstComponent extends ComponentBase {
 	<div>
 		<b>TAG: ${this.tag} | ${this.testAttr1}:${this.testAttr2}</b>
 	</div>
-	<div>
-		${test.getValues().map(v => `<i>${v}</i><br />`)}
-	</div>
+	<ul>
+		${test.getValues().map(v => `<li>${v}</li>`)}
+	</ul>
 	${test.isTrue ? `I'm true.` : `I'm false`}
 </div>`;
 
