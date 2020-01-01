@@ -1,7 +1,5 @@
-import { ComponentBase } from './src/component-base.class.js';
-import { html } from './src/functions/html.function.js';
+import { ComponentBase, html, injector } from './src/test.module.js';
 
-/** create the component */
 class MyFirstComponent extends ComponentBase {
 	static tag = 'my-first-component';
 	static observedAttributes = ['testattr1', 'testattr2'];
@@ -14,8 +12,11 @@ class MyFirstComponent extends ComponentBase {
 		return this.getAttribute('testattr2') || '0';
 	}
 
-	constructor() {
+	constructor(test = injector.get('TestService')) {
 		super();
+
+		console.log(test);
+		console.log(test.getValues());
 
 		this.template = () => html`
 <div>
@@ -25,6 +26,10 @@ class MyFirstComponent extends ComponentBase {
 	<div>
 		<b>TAG: ${this.tag} | ${this.testAttr1}:${this.testAttr2}</b>
 	</div>
+	<div>
+		${test.getValues().map(v => `<i>${v}</i><br />`)}
+	</div>
+	${test.isTrue ? `I'm true.` : `I'm false`}
 </div>`;
 
 		this.render();
