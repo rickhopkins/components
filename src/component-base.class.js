@@ -28,8 +28,12 @@ export class ComponentBase extends HTMLElement
 
 	render() {
 		/** get the template */
-		let templateEl = this.template;
-		if (typeof(this.template) === 'function') templateEl = this.template();
+		let template = this.template;
+		if (typeof(this.template) === 'function') template = this.template();
+
+		/** return the template */
+		const templateEl = document.createElement('template');
+		templateEl.innerHTML = template;
 
 		/** check the template for one and only one child */
 		if (templateEl.content.children.length !== 1) throw 'The template must contain one root element.';

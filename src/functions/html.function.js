@@ -12,7 +12,5 @@ export const html = (strings, ...args) => {
 	});
 
 	/** return the template */
-	const templateEl = document.createElement('template');
-	templateEl.innerHTML = template;
-	return templateEl;
+	return template;
 };
