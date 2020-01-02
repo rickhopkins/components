@@ -1,39 +1,43 @@
-import { Dependency } from './dependency.class.js';
+import { Injectable } from './injectable.class.js';
 
 class InjectionEngine {
-	dependencies = [];
+	injectables = [];
 
-	bind(token, item) {
+	register(injectable, token = null) {
+		/** check the injectable type */
+		if (!(injectable instanceof Injectable)) {
+			/** create a new Injectable, add to array, and return */
+			injectable = new Injectable(token, injectable);
+		}
+
 		/** create a new dependency, add to array, and return */
-		let dependency = new Dependency(token, item);
-		this.dependencies.push(dependency);
-		return dependency;
+		this.injectables.push(injectable);
 	}
 
 	get(token) {
-		const dependencyRef = this.dependencies.find(d => d.token === token);
-		if (dependencyRef === undefined) throw `Dependency could not be found: ${token}`;
+		const injectableRef = this.getInjectable(token);
+		if (injectableRef === undefined) throw `Injectable could not be found: ${token}`;
 
 		/** check for singleton and instance */
-		let instance = dependencyRef.getInstance();
+		let instance = injectableRef.getInstance();
 		if (instance === null) {
-			/** construct the dependency */
-			instance = this.construct(dependencyRef.service, dependencyRef.dependencies, dependencyRef.args);
+			/** construct the injectable */
+			instance = this.construct(injectableRef.injectable, injectableRef.dependencies, injectableRef.args);
 
-			/** set the dependencyRef instance */
-			if (dependencyRef.isSingleton()) dependencyRef.getInstance(instance);
+			/** set the injectableRef instance */
+			if (injectableRef.isSingleton()) injectableRef.getInstance(instance);
 		}
 
 		/** return the instance */
 		return instance;
 	}
 
-	getDependency() {
-		return this.dependencies.find(d => d.token === token);
+	getInjectable(token) {
+		return this.injectables.find(d => d.token === token);
 	}
 
-	construct(dependent, tokens = [], args = []) {
-		/** recursively create dependencies */
+	construct(injectable, tokens = [], args = []) {
+		/** recursively create injectables */
 		let dependencies = [];
 		if (tokens.length > 0) {
 			tokens.forEach(token => {
@@ -43,13 +47,13 @@ class InjectionEngine {
 				/** check for singleton and instance */
 				let dependency = dependencyRef.getInstance();
 				if ((dependencyRef.isSingleton() && dependency === null) || !dependencyRef.isSingleton()) {
-					/** construct the dependency */
-					dependency = this.construct(dependencyRef.item, dependencyRef.dependencies, dependencyRef.args);
+					/** construct the injectable */
+					dependency = this.construct(dependencyRef.injectable, dependencyRef.dependencies, dependencyRef.args);
 				}
 
 				/** set the dependencyRef instance */
 				if (dependencyRef.isSingleton() && dependencyRef.getInstance() ===  null) {
-					dependencyRef.setInstance(dependency);
+					dependencyRef.setInstance(injectable);
 				}
 
 				/** add the dependency */
@@ -60,8 +64,8 @@ class InjectionEngine {
 		/** check for args */
 		if (args.length > 0) dependencies = dependencies.concat(args);
 
-		/** initialize the new dependent */
-		return new dependent(...dependencies);
+		/** initialize the new injectable */
+		return new injectable(...dependencies);
 	}
 }
 

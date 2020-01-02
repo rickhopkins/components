@@ -1,14 +1,14 @@
-export class Dependency {
+export class Injectable {
 	token = null;
-	service = null;
+	injectable = null;
 	instance = null;
 	dependencies = [];
 	args = [];
 	singleton = true;
 
-	constructor(token, service) {
+	constructor(token, injectable) {
 		this.token = token;
-		this.service = service;
+		this.injectable = injectable;
 	}
 
 	/** public methods */

@@ -1,4 +1,4 @@
-import { injector } from '../injection/injector.class.js';
+import { injector, Injectable } from '../injection/index.js';
 
 export class TestService {
 	values = ['one', 'two', 'three'];
@@ -13,4 +13,7 @@ export class TestService {
 	}
 }
 
-injector.bind('TestService', TestService);
+// injector.register(TestService, 'TestService');
+const injectable = new Injectable('TestService', TestService);
+injectable.setSingleton(false);
+injector.register(injectable);
