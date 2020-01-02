@@ -16,7 +16,7 @@ export class MyFirstComponent extends ComponentBase {
 	constructor(test = injector.get('TestService')) {
 		super();
 
-		this.template = myFirstComponentTemplate(this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue);
+		this.template = () => myFirstComponentTemplate(this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue);
 		this.render();
 	}
 }
