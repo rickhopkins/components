@@ -1,7 +1,6 @@
 import { virtualizeDOM, updateDOM } from './functions/dom.functions.js';
 
-export class ComponentBase extends HTMLElement
-{
+export class ComponentBase extends HTMLElement {
 	/** public properties */
 	get tag() {
 		return this.constructor['tag'] || null;
