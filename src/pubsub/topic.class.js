@@ -35,4 +35,12 @@ export class Topic {
 		if (this.values.length === 0) return null;
 		return this.values[this.values.length - 1];
 	}
+
+	onError(error) {
+		/** fire callback for each subscription */
+		this.subscriptions.forEach(subscription => {
+			const callback = subscription.onErrorCallback;
+			callback.call(null, error);
+		});
+	}
 }

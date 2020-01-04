@@ -2,6 +2,7 @@ export class Subscription {
 	id = null;
 	callback = null;
 	topic = null;
+	onErrorCallback = null;
 
 	constructor(id, callback, topic) {
 		this.id = id;
@@ -11,5 +12,9 @@ export class Subscription {
 
 	unsubscribe() {
 		this.topic.unsubscribe(this.id);
+	}
+
+	onError(callback) {
+		this.onErrorCallback = callback;
 	}
 }
