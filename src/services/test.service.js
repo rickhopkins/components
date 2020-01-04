@@ -1,4 +1,5 @@
 import { injector, Injectable } from '../injection/index.js';
+import { HttpGet } from '../http/http-get.class.js';
 
 export class TestService {
 	values = ['one', 'two', 'three'];
@@ -10,6 +11,10 @@ export class TestService {
 
 	getValue(index) {
 		return this.values[index];
+	}
+
+	getUsers() {
+		return new HttpGet('/data/users.json').send();
 	}
 }
 

@@ -1,6 +1,5 @@
 import { ComponentBase, injector } from '../../test.module.js';
 import { myFirstComponentTemplate } from './my-first-component.template.js';
-import { HttpGet } from '../../http/http-get.class.js';
 
 export class MyFirstComponent extends ComponentBase {
 	static tag = 'my-first-component';
@@ -29,14 +28,12 @@ export class MyFirstComponent extends ComponentBase {
 		this.template = () => myFirstComponentTemplate(this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue, this.users);
 		this.render();
 
-		const reqTopic = new HttpGet('/data/users.json').send();
-		reqTopic.subscribe((users) => {
+		const usersTopic = test.getUsers();
+		usersTopic.subscribe((users) => {
 			if (users === null) return;
 			this.users = users;
 			console.log(users);
 		});
-
-		setTimeout(() => reqTopic.next([]), 5000);
 	}
 }
 
