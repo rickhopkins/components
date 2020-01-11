@@ -1,4 +1,5 @@
 import { virtualizeDOM, updateDOM } from './functions/dom.functions.js';
+import { newGuid } from './functions/index.js';
 
 export class ComponentBase extends HTMLElement {
 	/** public properties */
@@ -8,6 +9,8 @@ export class ComponentBase extends HTMLElement {
 	get observedAttributes() {
 		return this.constructor['observedAttributes'] || [];
 	}
+	id = newGuid();
+	zones = new Map();
 	initd = false;
 
 	/** constructor */
@@ -19,29 +22,15 @@ export class ComponentBase extends HTMLElement {
 			throw `Components must specify a static 'tag' property.`;
 		}
 
-		this.template = '';
+		this.template = () => {};
 		this.dom = this.attachShadow({mode: 'open'});
 	}
 
 	/** public methods */
 
 	render() {
-		/** get the template */
-		let template = this.template;
-		if (typeof(this.template) === 'function') template = this.template();
-
-		/** return the template */
-		const templateEl = document.createElement('template');
-		templateEl.innerHTML = template;
-
-		/** check the template for one and only one child */
-		if (templateEl.content.children.length !== 1) throw 'The template must contain one root element.';
-
-		/** add the template contents to the dom */
-		updateDOM(this.dom, virtualizeDOM(templateEl.content.children[0]), this.initd ? virtualizeDOM(this.dom.children[0]) : undefined);
-
-		/** set the initd property */
-		this.initd = true;
+		/** render the template */
+		this.template();
 	}
 
 	/** lifecycle callbacks */
@@ -66,6 +55,10 @@ export class ComponentBase extends HTMLElement {
 		while (this.dom.firstChild) this.dom.removeChild(this.dom.firstChild);
 	}
 
+	addZone(zone) {
+		this.zones.set(zone.id, zone);
+	}
+
 	/** static methods */
 
 	/**
@@ -74,5 +67,32 @@ export class ComponentBase extends HTMLElement {
 	static register() {
 		/** register the component */
 		customElements.define(this.tag, this);
+	}
+}
+
+export class Zone {
+	_id;
+	_data;
+
+	get id() {
+		return this._id;
+	};
+	set id(id) {
+		this._id = id;
+	}
+	get data() {
+		return this._data;
+	}
+	set data(data) {
+		this._data = JSON.stringify(data);
+	}
+
+	constructor(id, data) {
+		this.id = id;
+		this.data = data;
+	}
+
+	isEqual(data) {
+		return JSON.stringify(data) === this.data;
 	}
 }

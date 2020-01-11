@@ -25,14 +25,18 @@ export class MyFirstComponent extends ComponentBase {
 	constructor(test = injector.get('TestService')) {
 		super();
 
-		this.template = () => myFirstComponentTemplate(this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue, this.users);
+		this.template = () => myFirstComponentTemplate.call(this, this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue, this.users);
 		this.render();
 
 		const usersTopic = test.getUsers();
 		usersTopic.subscribe((users) => {
 			if (users === null) return;
 			this.users = users;
-			console.log(users);
+
+			setInterval(() => {
+				this.users.pop();
+				this.users = this.users;
+			}, 5000);
 		});
 	}
 }
