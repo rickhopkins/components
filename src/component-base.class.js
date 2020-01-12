@@ -63,6 +63,7 @@ export class ComponentBase extends HTMLElement {
 		let template = '';
 
 		/** cycle through args */
+		/** TODO: THIS ISN'T RECURSIVE. SHOULD BE */ 
 		args.map((a, i) => {
 			if (typeof a !== 'string') {
 				if (Array.isArray(a)) {
