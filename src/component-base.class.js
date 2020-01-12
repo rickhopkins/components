@@ -1,5 +1,4 @@
-import { virtualizeDOM, updateDOM } from './functions/dom.functions.js';
-import { newGuid } from './functions/index.js';
+import { html, uniqueID } from './functions/index.js';
 
 export class ComponentBase extends HTMLElement {
 	/** public properties */
@@ -9,9 +8,8 @@ export class ComponentBase extends HTMLElement {
 	get observedAttributes() {
 		return this.constructor['observedAttributes'] || [];
 	}
-	id = newGuid();
+	id = uniqueID();
 	zones = new Map();
-	initd = false;
 
 	/** constructor */
 	constructor() {
@@ -30,7 +28,8 @@ export class ComponentBase extends HTMLElement {
 
 	render() {
 		/** render the template */
-		this.template();
+		const { strings, args } = this.template();
+		this.compile(strings, args);
 	}
 
 	/** lifecycle callbacks */
@@ -57,6 +56,55 @@ export class ComponentBase extends HTMLElement {
 
 	addZone(zone) {
 		this.zones.set(zone.id, zone);
+	}
+
+	compile(strings, args) {
+		/** initialize template */
+		let template = '';
+
+		/** cycle through args */
+		args.map((a, i) => {
+			if (typeof a !== 'string') {
+				if (Array.isArray(a)) {
+					a.map((d, j) => a[j] = d.template);
+				} else {
+					a = a.template
+				}
+
+				args[i] = a;
+			}
+		});
+
+		/** check for zones */
+		if (this.zones.size > 0) {
+			args.map((a, i) => {
+				const id = `${this.id}_${i}`;
+				const zone = this.zones.get(id);
+				if (!zone.isEqual(a)) {
+					zone.data = a;
+					this.dom.getElementById(zone.id).innerHTML = html(a).template;
+				}
+			});
+		} else {
+			/** concatenate the template strings */
+			strings.map((s, i) => {
+				if (args[i]) {
+					/** create/update zone */
+					const zone = new Zone(`${this.id}_${i}`, args[i]);
+					this.addZone(zone);
+
+					/** add the zone tags */
+					s += `<zone id="${zone.id}">`;
+					if (Array.isArray(args[i])) s += args[i].join('');
+					else s += args[i];
+					s+= `</zone>`;
+				}
+				template += s.replace(/(\r\n|\n|\r)/gm, '')
+			});
+
+			/** return the template */
+			this.dom.innerHTML = template;
+		}
 	}
 
 	/** static methods */

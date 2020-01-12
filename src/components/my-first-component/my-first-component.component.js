@@ -25,7 +25,7 @@ export class MyFirstComponent extends ComponentBase {
 	constructor(test = injector.get('TestService')) {
 		super();
 
-		this.template = () => myFirstComponentTemplate.call(this, this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue, this.users);
+		this.template = () => myFirstComponentTemplate(this.tag, this.testAttr1, this.testAttr2, test.getValues(), test.isTrue, this.users);
 		this.render();
 
 		const usersTopic = test.getUsers();

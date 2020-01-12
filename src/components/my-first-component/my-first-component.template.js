@@ -1,7 +1,7 @@
-import { html, compile } from '../../functions/html.function.js';
+import { html } from '../../functions/html.function.js';
 
-export const myFirstComponentTemplate = function(tag, attr1, attr2, values, isTrue, users = []) {
-	return compile(this)/*html*/`
+export const myFirstComponentTemplate = (tag, attr1, attr2, values, isTrue, users = []) => {
+	return html`
 		<div class="test">
 			Custom Elements Coming Soon!!!
 		</div>
