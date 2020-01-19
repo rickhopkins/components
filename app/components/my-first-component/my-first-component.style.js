@@ -1,4 +1,4 @@
-import { html } from '../../functions/html.function.js';
+import { html } from '../../../src/functions/html.function.js';
 
 export const myFirstComponentStyles = html`
 	<style>

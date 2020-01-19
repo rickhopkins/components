@@ -1,4 +1,4 @@
-import { ComponentBase, injector } from '../../test.module.js';
+import { ComponentBase, injector } from '../../../src/index.js';
 import { myFirstComponentTemplate } from './my-first-component.template.js';
 
 export class MyFirstComponent extends ComponentBase {

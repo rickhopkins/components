@@ -1,4 +1,4 @@
-import { html } from '../../functions/html.function.js';
+import { html } from '../../../src/functions/html.function.js';
 
 export const myFirstComponentTemplate = (tag, attr1, attr2, values, isTrue, users = []) => {
 	return html`

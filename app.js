@@ -1,1 +1,0 @@
-import { MyFirstComponent } from './src/components/my-first-component/my-first-component.component.js';

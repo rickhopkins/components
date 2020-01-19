@@ -1,4 +1,5 @@
-import { html, uniqueID } from './functions/index.js';
+import { html, uniqueID } from '../functions/index.js';
+import { Zone } from './zone.class.js';
 
 export class ComponentBase extends HTMLElement {
 	/** public properties */
@@ -116,32 +117,5 @@ export class ComponentBase extends HTMLElement {
 	static register() {
 		/** register the component */
 		customElements.define(this.tag, this);
-	}
-}
-
-export class Zone {
-	_id;
-	_data;
-
-	get id() {
-		return this._id;
-	};
-	set id(id) {
-		this._id = id;
-	}
-	get data() {
-		return this._data;
-	}
-	set data(data) {
-		this._data = JSON.stringify(data);
-	}
-
-	constructor(id, data) {
-		this.id = id;
-		this.data = data;
-	}
-
-	isEqual(data) {
-		return JSON.stringify(data) === this.data;
 	}
 }
