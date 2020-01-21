@@ -1,19 +1,15 @@
-import { ComponentBase, injector } from '../../../src/index.js';
+import { ComponentBase, injector, Property } from '../../../src/index.js';
 import { myFirstComponentTemplate } from './my-first-component.template.js';
 
 export class MyFirstComponent extends ComponentBase {
 	static tag = 'my-first-component';
-	static observedAttributes = ['testattr1', 'testattr2'];
+	static properties = [
+		new Property('testAttr1', 'int'),
+		new Property('testAttr2', 'boolean')
+	];
 
 	_users = [];
 
-	get testAttr1() {
-		return this.getAttribute('testattr1') || '0';
-	}
-
-	get testAttr2() {
-		return this.getAttribute('testattr2') || '0';
-	}
 	get users() {
 		return this._users;
 	}
@@ -33,10 +29,10 @@ export class MyFirstComponent extends ComponentBase {
 			if (users === null) return;
 			this.users = users;
 
-			setInterval(() => {
-				this.users.pop();
-				this.users = this.users;
-			}, 5000);
+			// setInterval(() => {
+			// 	this.users.pop();
+			// 	this.users = this.users;
+			// }, 5000);
 		});
 	}
 }

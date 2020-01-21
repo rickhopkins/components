@@ -12,7 +12,7 @@ export class Zone {
 		return this._data;
 	}
 	set data(data) {
-		this._data = JSON.stringify(data);
+		this._data = data;
 	}
 
 	constructor(id, data) {
@@ -21,6 +21,6 @@ export class Zone {
 	}
 
 	isEqual(data) {
-		return JSON.stringify(data) === this.data;
+		return JSON.stringify(data) === JSON.stringify(this.data);
 	}
 }

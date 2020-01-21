@@ -1,4 +1,5 @@
-import { html, uniqueID } from '../functions/index.js';
+import { html } from '../functions/index.js';
+import { Property } from './property.class.js';
 import { Zone } from './zone.class.js';
 
 export class ComponentBase extends HTMLElement {
@@ -9,17 +10,31 @@ export class ComponentBase extends HTMLElement {
 	get observedAttributes() {
 		return this.constructor['observedAttributes'] || [];
 	}
-	id = uniqueID();
+	get properties() {
+		return this.constructor['properties'];
+	}
+
 	zones = new Map();
 
-	/** constructor */
 	constructor() {
 		super();
 
-		/** check for tag */
-		if (this.tag === null || typeof this.tag !== 'string' || this.tag.length === 0) {
-			throw `Components must specify a static 'tag' property.`;
-		}
+		this.properties.forEach(prop => {
+			/** get the initial value */
+			let _val = this[prop.name] || '1';
+
+			/** create getter / setter */
+			const getter = () => {
+				return _val;
+			};
+			const setter = (newVal) => {
+				_val = newVal;
+				this.render();
+			};
+
+			/** redefine the property */
+			Object.defineProperty(this, prop.name, { get: getter, set: setter });
+		});
 
 		this.template = () => {};
 		this.dom = this.attachShadow({mode: 'open'});
@@ -43,6 +58,7 @@ export class ComponentBase extends HTMLElement {
 	}
 
 	attributeChangedCallback(attrName, oldVal, newVal) {
+		this[attrName] = newVal;
 		console.log(`Component Attribute Value Changed. Attribute ${attrName} changed from '${oldVal}' to '${newVal}'.`);
 		this.render();
 	}
@@ -80,11 +96,11 @@ export class ComponentBase extends HTMLElement {
 		/** check for zones */
 		if (this.zones.size > 0) {
 			args.map((a, i) => {
-				const id = `${this.id}_${i}`;
+				const id = `z${i}`;
 				const zone = this.zones.get(id);
 				if (!zone.isEqual(a)) {
 					zone.data = a;
-					this.dom.getElementById(zone.id).innerHTML = html(a).template;
+					this.dom.querySelector(`${zone.id}`).innerHTML = html(a).template;
 				}
 			});
 		} else {
@@ -92,14 +108,14 @@ export class ComponentBase extends HTMLElement {
 			strings.map((s, i) => {
 				if (args[i]) {
 					/** create/update zone */
-					const zone = new Zone(`${this.id}_${i}`, args[i]);
+					const zone = new Zone(`z${i}`, args[i]);
 					this.addZone(zone);
 
 					/** add the zone tags */
-					s += `<zone id="${zone.id}">`;
+					s += `<${zone.id}>`;
 					if (Array.isArray(args[i])) s += args[i].join('');
 					else s += args[i];
-					s+= `</zone>`;
+					s+= `</${zone.id}>`;
 				}
 				template += s.replace(/(\r\n|\n|\r)/gm, '')
 			});
@@ -115,6 +131,14 @@ export class ComponentBase extends HTMLElement {
 	 * Register a component
 	 */
 	static register() {
+		/** check for tag */
+		if (this.tag === null || typeof this.tag !== 'string' || this.tag.length === 0) {
+			throw `Components must specify a static 'tag' property.`;
+		}
+
+		/** create observedAttributes */
+		this.observedAttributes = this.properties.map(prop => prop.name);
+
 		/** register the component */
 		customElements.define(this.tag, this);
 	}
